@@ -1,6 +1,6 @@
 import { onBeforeUnmount } from 'vue';
 
-/** Returns a debounced wrapper of `fn` that cancels itself on unmount. */
+/** Devuelve una versión con debounce de `fn` que se cancela al desmontar. */
 export function useDebounceFn<A extends unknown[]>(
   fn: (...args: A) => void,
   delay = 300,

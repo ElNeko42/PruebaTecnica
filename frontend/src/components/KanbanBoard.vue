@@ -12,7 +12,7 @@ const props = defineProps<{
   groupKey: string;
   itemKey?: string;
   draggable?: boolean;
-  // Parent-supplied rule deciding whether `item` may be dropped on a column.
+  // Regla que aporta el padre para decidir si `item` puede soltarse en una columna.
   canDrop?: (item: T, toKey: string) => boolean;
 }>();
 
@@ -27,7 +27,7 @@ const grouped = computed(() => {
   for (const col of props.columns) map.set(col.key, []);
   for (const item of props.items) {
     const group = String((item as Record<string, unknown>)[props.groupKey]);
-    // Items whose group is not a known column are simply not shown.
+    // Los elementos cuyo grupo no es una columna conocida simplemente no se muestran.
     map.get(group)?.push(item);
   }
   return map;
@@ -37,7 +37,7 @@ function itemId(item: T): string | number {
   return (item as Record<string, unknown>)[keyField.value] as string | number;
 }
 
-// --- Drag and drop ---
+// --- Arrastrar y soltar ---
 const dragging = ref<T | null>(null);
 const dragOverKey = ref<string | null>(null);
 const draggingId = computed(() =>
@@ -63,7 +63,7 @@ function onDragEnd() {
 }
 
 function onDragOver(toKey: string, event: DragEvent) {
-  // Only accept the drop (preventDefault) on columns with a valid transition.
+  // Solo se acepta soltar (preventDefault) en columnas con una transición válida.
   if (allowsDrop(toKey)) {
     event.preventDefault();
     dragOverKey.value = toKey;

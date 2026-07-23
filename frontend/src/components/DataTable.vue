@@ -49,7 +49,7 @@ const someSelected = computed(
   () => props.rows.some((r) => selectedSet.value.has(keyOf(r))) && !allSelected.value,
 );
 
-// `indeterminate` is a DOM property, not an attribute — set it imperatively.
+// `indeterminate` es una propiedad del DOM, no un atributo: se asigna de forma imperativa.
 const headerCheck = ref<HTMLInputElement | null>(null);
 watchEffect(() => {
   if (headerCheck.value) headerCheck.value.indeterminate = someSelected.value;

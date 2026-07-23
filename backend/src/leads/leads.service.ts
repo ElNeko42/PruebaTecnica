@@ -74,7 +74,7 @@ export class LeadsService {
     if (dto.contactId) {
       await this.contactsService.findOne(dto.contactId);
     }
-    // A status change through the generic update must still obey the rules.
+    // Un cambio de estado por el update genérico también debe cumplir las reglas.
     if (dto.status && dto.status !== lead.status) {
       this.assertValidTransition(lead.status as LeadStatus, dto.status);
     }

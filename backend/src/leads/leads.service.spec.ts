@@ -12,7 +12,7 @@ function makeService(lead: Partial<Lead> | null) {
     save: jest.fn(),
   } as unknown as jest.Mocked<RepoMock>;
 
-  // findOne is called first to load the lead, then again to return relations.
+  // findOne se llama primero para cargar el lead, y otra vez para devolver relaciones.
   repo.findOne
     .mockResolvedValueOnce(lead as Lead)
     .mockResolvedValueOnce({ ...(lead as Lead), status: 'contacted' } as Lead);

@@ -25,7 +25,7 @@ const selectedOption = computed(() =>
   props.options.find((o) => o.value === props.modelValue),
 );
 
-// While open we show what the user is typing; while closed, the selected label.
+// Abierto mostramos lo que el usuario teclea; cerrado, la etiqueta seleccionada.
 const displayValue = computed(() =>
   open.value ? query.value : (selectedOption.value?.label ?? ''),
 );
@@ -37,7 +37,7 @@ const filtered = computed(() => {
 });
 
 watch(filtered, () => {
-  // Keep the highlight in range whenever the filtered list changes.
+  // Mantiene el resaltado dentro de rango cuando cambia la lista filtrada.
   activeIndex.value = filtered.value.length ? 0 : -1;
 });
 

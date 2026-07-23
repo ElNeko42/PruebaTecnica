@@ -42,7 +42,7 @@ const MODE_OPTIONS = [
 
 const toast = useToast();
 
-// Persist the chosen view so it survives navigation/refresh.
+// Guarda la vista elegida para que sobreviva a navegación/recarga.
 const mode = ref(localStorage.getItem('leads_view_mode') || 'list');
 watch(mode, (m) => localStorage.setItem('leads_view_mode', m));
 
@@ -119,8 +119,8 @@ async function loadBoard() {
   }
 }
 
-// Drag-and-drop rule: a lead may be dropped only on a column its state
-// machine allows (same rule the "→ Status" buttons use).
+// Regla de arrastrar y soltar: un lead solo puede soltarse en una columna que
+// permita su máquina de estados (la misma regla que usan los botones "→ Estado").
 function canDrop(lead: Lead, toStatus: string) {
   return transitions.value[lead.status]?.includes(toStatus) ?? false;
 }
@@ -129,7 +129,7 @@ async function move(lead: Lead, target: string) {
   movingId.value = lead.id;
   try {
     await changeLeadStatus(lead.id, target);
-    lead.status = target; // reactive: card re-groups into the new column
+    lead.status = target; // reactivo: la tarjeta se reagrupa en la nueva columna
     toast.success(`Moved to ${STATUS_LABEL[target] ?? target}.`);
   } catch (err) {
     toast.error(apiErrorMessage(err, 'Could not move the lead.'));
@@ -138,7 +138,7 @@ async function move(lead: Lead, target: string) {
   }
 }
 
-// Load the data the active mode needs, refreshing on switch so it stays in sync.
+// Carga los datos que necesita el modo activo, refrescando al cambiar para no desincronizar.
 watch(
   mode,
   (m) => {
@@ -162,7 +162,7 @@ watch(
       </div>
     </header>
 
-    <!-- ============ LIST MODE ============ -->
+    <!-- ============ MODO LISTA ============ -->
     <template v-if="mode === 'list'">
       <div class="toolbar card">
         <label class="label" for="status">Status</label>
@@ -236,7 +236,7 @@ watch(
       </div>
     </template>
 
-    <!-- ============ BOARD MODE ============ -->
+    <!-- ============ MODO TABLERO ============ -->
     <template v-else>
       <p v-if="boardLoading && !boardLoaded" class="empty card">Loading…</p>
       <p v-else-if="boardError" class="empty card error">{{ boardError }}</p>

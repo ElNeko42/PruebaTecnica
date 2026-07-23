@@ -47,7 +47,7 @@ const loading = ref(true);
 const saving = ref(false);
 const submitted = ref(false);
 
-// Client-side validation: amount must be > 0; contact is required; title required.
+// Validación en cliente: el importe debe ser > 0; contacto obligatorio; título obligatorio.
 const errors = computed(() => ({
   title: !form.title.trim() ? 'Title is required.' : '',
   amount:

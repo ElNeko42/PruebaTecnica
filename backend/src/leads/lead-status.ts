@@ -3,10 +3,10 @@ export const LEAD_STATUSES = ['new', 'contacted', 'qualified', 'lost'] as const;
 export type LeadStatus = (typeof LEAD_STATUSES)[number];
 
 /**
- * Allowed status transitions for a lead.
+ * Transiciones de estado permitidas para un lead.
  *
- * Pipeline: new → contacted → qualified. A lead can be marked `lost` from any
- * active stage. `lost` is terminal (a lost lead is not reopened).
+ * Pipeline: new → contacted → qualified. Un lead puede marcarse como `lost`
+ * desde cualquier estado activo. `lost` es terminal (no se reabre).
  */
 export const LEAD_TRANSITIONS: Record<LeadStatus, LeadStatus[]> = {
   new: ['contacted', 'lost'],

@@ -32,7 +32,7 @@ export class LeadsController {
     return this.leadsService.findAll(page, pageSize, status);
   }
 
-  // Declared before ':id' so "transitions" is not parsed as a lead id.
+  // Declarado antes de ':id' para que "transitions" no se interprete como id de lead.
   @Get('transitions')
   transitions() {
     return LEAD_TRANSITIONS;

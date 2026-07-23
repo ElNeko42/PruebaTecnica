@@ -90,7 +90,7 @@ const debouncedReload = useDebounceFn(() => {
   load();
 }, 300);
 
-// Any filter change resets to page 1 and reloads (debounced for typing).
+// Cualquier cambio de filtro vuelve a la página 1 y recarga (con debounce al teclear).
 watch(filters, debouncedReload);
 
 function resetFilters() {
@@ -138,7 +138,7 @@ onMounted(async () => {
     const list = await fetchContacts({ page: 1, pageSize: 100 });
     contacts.value = list.data;
   } catch {
-    // Contact filter is optional; ignore load failure here.
+    // El filtro de contacto es opcional; ignoramos un fallo de carga aquí.
   }
   load();
 });

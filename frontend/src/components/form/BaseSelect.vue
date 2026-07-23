@@ -12,8 +12,8 @@ const emit = defineEmits<{
   'update:modelValue': [value: T];
 }>();
 
-// Native <select> values are always strings; we match back to the original
-// option so the emitted value keeps its type (e.g. a numeric contact id).
+// Los valores de un <select> nativo siempre son strings; buscamos la opción
+// original para que el valor emitido conserve su tipo (p. ej. un id numérico de contacto).
 function onChange(event: Event) {
   const raw = (event.target as HTMLSelectElement).value;
   const option = props.options.find((o) => String(o.value) === raw);
