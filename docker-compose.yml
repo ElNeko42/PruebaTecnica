@@ -1,0 +1,23 @@
+services:
+  mariadb:
+    image: mariadb:11
+    container_name: leadflow-mariadb
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+      MARIADB_DATABASE: leadflow
+      MARIADB_USER: leadflow
+      MARIADB_PASSWORD: leadflow
+    ports:
+      # Host 3307 avoids clashes with a local MySQL/MariaDB on 3306
+      - "3307:3306"
+    volumes:
+      - leadflow_mariadb_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_shutdown"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  leadflow_mariadb_data:
