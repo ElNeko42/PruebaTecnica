@@ -25,7 +25,7 @@ function logout() {
       <nav>
         <RouterLink to="/leads">Leads</RouterLink>
         <RouterLink to="/contacts">Contacts</RouterLink>
-        <RouterLink to="/opportunities" class="pending">Opportunities</RouterLink>
+        <RouterLink to="/opportunities">Opportunities</RouterLink>
       </nav>
 
       <div class="sidebar-footer">
@@ -95,10 +95,6 @@ nav a.router-link-active {
   background: var(--accent-soft);
   color: var(--accent);
   font-weight: 600;
-}
-
-nav a.pending {
-  opacity: 0.7;
 }
 
 .sidebar-footer {

@@ -7,7 +7,9 @@ import ContactDetailView from '../views/ContactDetailView.vue';
 import LeadsView from '../views/LeadsView.vue';
 import LeadFormView from '../views/LeadFormView.vue';
 import LeadDetailView from '../views/LeadDetailView.vue';
-import OpportunitiesPlaceholderView from '../views/OpportunitiesPlaceholderView.vue';
+import OpportunitiesView from '../views/OpportunitiesView.vue';
+import OpportunityFormView from '../views/OpportunityFormView.vue';
+import OpportunityDetailView from '../views/OpportunityDetailView.vue';
 
 const router = createRouter({
   history: createWebHistory(),
@@ -27,7 +29,22 @@ const router = createRouter({
         {
           path: 'opportunities',
           name: 'opportunities',
-          component: OpportunitiesPlaceholderView,
+          component: OpportunitiesView,
+        },
+        {
+          path: 'opportunities/new',
+          name: 'opportunity-new',
+          component: OpportunityFormView,
+        },
+        {
+          path: 'opportunities/:id',
+          name: 'opportunity-detail',
+          component: OpportunityDetailView,
+        },
+        {
+          path: 'opportunities/:id/edit',
+          name: 'opportunity-edit',
+          component: OpportunityFormView,
         },
       ],
     },

@@ -21,9 +21,36 @@ export type Lead = {
   updatedAt: string;
 };
 
+export type OpportunityStage =
+  | 'prospecting'
+  | 'proposal'
+  | 'negotiation'
+  | 'won'
+  | 'lost';
+
+export type Opportunity = {
+  id: number;
+  title: string;
+  amount: number;
+  stage: OpportunityStage;
+  contactId: number;
+  ownerId: number;
+  contact?: Contact | null;
+  owner?: { id: number; email: string; name: string } | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type PaginatedContacts = {
   data: Contact[];
   total: number;
+  page: number;
+  pageSize: number;
+};
+
+export type PaginatedOpportunities = {
+  data: Opportunity[];
+  totalCount: number;
   page: number;
   pageSize: number;
 };
