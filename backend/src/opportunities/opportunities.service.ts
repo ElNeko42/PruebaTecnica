@@ -6,6 +6,14 @@ import { CreateOpportunityDto } from './dto/create-opportunity.dto';
 import { UpdateOpportunityDto } from './dto/update-opportunity.dto';
 import { Opportunity } from './opportunity.entity';
 
+export type OpportunityFilters = {
+  stage?: string;
+  q?: string;
+  contactId?: number;
+  amountMin?: number;
+  amountMax?: number;
+};
+
 @Injectable()
 export class OpportunitiesService {
   constructor(
@@ -14,7 +22,7 @@ export class OpportunitiesService {
     private readonly contactsService: ContactsService,
   ) {}
 
-  async findAll(page = 1, pageSize = 10, stage?: string) {
+  async findAll(page = 1, pageSize = 10, filters: OpportunityFilters = {}) {
     const take = Math.min(Math.max(pageSize, 1), 100);
     const skip = (Math.max(page, 1) - 1) * take;
 
@@ -24,8 +32,26 @@ export class OpportunitiesService {
       .leftJoinAndSelect('opportunity.owner', 'owner')
       .orderBy('opportunity.createdAt', 'DESC');
 
-    if (stage) {
-      qb.andWhere('opportunity.stage = :stage', { stage });
+    if (filters.stage) {
+      qb.andWhere('opportunity.stage = :stage', { stage: filters.stage });
+    }
+    if (filters.q) {
+      qb.andWhere('opportunity.title LIKE :q', { q: `%${filters.q}%` });
+    }
+    if (filters.contactId) {
+      qb.andWhere('opportunity.contactId = :contactId', {
+        contactId: filters.contactId,
+      });
+    }
+    if (filters.amountMin != null) {
+      qb.andWhere('opportunity.amount >= :amountMin', {
+        amountMin: filters.amountMin,
+      });
+    }
+    if (filters.amountMax != null) {
+      qb.andWhere('opportunity.amount <= :amountMax', {
+        amountMax: filters.amountMax,
+      });
     }
 
     qb.skip(skip).take(take);

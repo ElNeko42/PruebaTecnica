@@ -9,6 +9,10 @@ export async function fetchOpportunities(params: {
   page?: number;
   pageSize?: number;
   stage?: string;
+  q?: string;
+  contactId?: number;
+  amountMin?: number;
+  amountMax?: number;
 }) {
   const { data } = await http.get<PaginatedOpportunities>('/opportunities', {
     params,

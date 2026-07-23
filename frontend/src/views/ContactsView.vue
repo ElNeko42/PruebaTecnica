@@ -2,7 +2,15 @@
 import { onMounted, ref } from 'vue';
 import { RouterLink } from 'vue-router';
 import { fetchContacts } from '../api/contacts';
+import DataTable from '../components/DataTable.vue';
 import type { Contact } from '../types';
+
+const COLUMNS = [
+  { key: 'name', label: 'Name' },
+  { key: 'email', label: 'Email' },
+  { key: 'company', label: 'Company' },
+  { key: 'phone', label: 'Phone' },
+];
 
 const contacts = ref<Contact[]>([]);
 const total = ref(0);
@@ -69,31 +77,19 @@ onMounted(load);
       </button>
     </div>
 
-    <div class="card table-wrap">
-      <p v-if="loading" class="empty">Loading…</p>
-      <p v-else-if="error" class="empty error">{{ error }}</p>
-      <p v-else-if="!contacts.length" class="empty">No contacts found.</p>
-      <table v-else class="table">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Company</th>
-            <th>Phone</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="contact in contacts" :key="contact.id">
-            <td>
-              <RouterLink :to="`/contacts/${contact.id}`">{{ contact.name }}</RouterLink>
-            </td>
-            <td>{{ contact.email }}</td>
-            <td>{{ contact.company || '—' }}</td>
-            <td>{{ contact.phone || '—' }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <DataTable
+      :columns="COLUMNS"
+      :rows="contacts"
+      :loading="loading"
+      :error="error"
+      empty-text="No contacts found."
+    >
+      <template #name="{ row }">
+        <RouterLink :to="`/contacts/${row.id}`">{{ row.name }}</RouterLink>
+      </template>
+      <template #company="{ row }">{{ row.company || '—' }}</template>
+      <template #phone="{ row }">{{ row.phone || '—' }}</template>
+    </DataTable>
 
     <div class="pager">
       <button class="btn secondary" type="button" :disabled="page <= 1" @click="prev">
@@ -126,10 +122,6 @@ onMounted(load);
   gap: 0.75rem;
   padding: 0.9rem;
   margin-bottom: 1rem;
-}
-
-.table-wrap {
-  overflow: auto;
 }
 
 .pager {

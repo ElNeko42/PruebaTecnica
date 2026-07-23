@@ -37,3 +37,7 @@ export async function updateLead(
   const { data } = await http.patch<Lead>(`/leads/${id}`, payload);
   return data;
 }
+
+export async function deleteLead(id: number) {
+  await http.delete(`/leads/${id}`);
+}

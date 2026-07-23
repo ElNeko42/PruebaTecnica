@@ -26,8 +26,18 @@ export class OpportunitiesController {
     @Query('page') page?: number,
     @Query('pageSize') pageSize?: number,
     @Query('stage') stage?: string,
+    @Query('q') q?: string,
+    @Query('contactId') contactId?: number,
+    @Query('amountMin') amountMin?: number,
+    @Query('amountMax') amountMax?: number,
   ) {
-    return this.opportunitiesService.findAll(page, pageSize, stage);
+    return this.opportunitiesService.findAll(page, pageSize, {
+      stage,
+      q,
+      contactId,
+      amountMin,
+      amountMax,
+    });
   }
 
   @Get(':id')

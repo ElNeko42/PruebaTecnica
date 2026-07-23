@@ -9,14 +9,17 @@ import {
 } from '../api/opportunities';
 import { apiErrorMessage } from '../api/errors';
 import { useToast } from '../composables/useToast';
+import FormField from '../components/form/FormField.vue';
+import BaseInput from '../components/form/BaseInput.vue';
+import SearchableSelect from '../components/form/SearchableSelect.vue';
 import type { Contact, OpportunityStage } from '../types';
 
-const STAGES: OpportunityStage[] = [
-  'prospecting',
-  'proposal',
-  'negotiation',
-  'won',
-  'lost',
+const STAGE_OPTIONS: { label: string; value: OpportunityStage }[] = [
+  { label: 'Prospecting', value: 'prospecting' },
+  { label: 'Proposal', value: 'proposal' },
+  { label: 'Negotiation', value: 'negotiation' },
+  { label: 'Won', value: 'won' },
+  { label: 'Lost', value: 'lost' },
 ];
 
 const route = useRoute();
@@ -33,6 +36,13 @@ const form = reactive({
 });
 
 const contacts = ref<Contact[]>([]);
+const contactOptions = computed(() =>
+  contacts.value.map((c) => ({
+    label: `${c.name} (${c.email})`,
+    value: c.id as number | null,
+  })),
+);
+
 const loading = ref(true);
 const saving = ref(false);
 const submitted = ref(false);
@@ -101,7 +111,7 @@ async function onSubmit() {
 </script>
 
 <template>
-  <section class="wrap">
+  <section>
     <RouterLink class="back" to="/opportunities">← Back to opportunities</RouterLink>
 
     <form class="card form" novalidate @submit.prevent="onSubmit">
@@ -110,61 +120,63 @@ async function onSubmit() {
       <p v-if="loading" class="muted">Loading…</p>
 
       <template v-else>
-        <div class="field">
-          <label class="label" for="title">Title</label>
-          <input
-            id="title"
-            v-model="form.title"
-            class="input"
-            :class="{ invalid: submitted && errors.title }"
-            placeholder="e.g. Enterprise license renewal"
-          />
-          <p v-if="submitted && errors.title" class="field-error">
-            {{ errors.title }}
-          </p>
-        </div>
-
-        <div class="field">
-          <label class="label" for="amount">Amount (€)</label>
-          <input
-            id="amount"
-            v-model.number="form.amount"
-            class="input"
-            :class="{ invalid: submitted && errors.amount }"
-            type="number"
-            min="0"
-            step="0.01"
-            inputmode="decimal"
-            placeholder="0.00"
-          />
-          <p v-if="submitted && errors.amount" class="field-error">
-            {{ errors.amount }}
-          </p>
-        </div>
-
-        <div class="field">
-          <label class="label" for="stage">Stage</label>
-          <select id="stage" v-model="form.stage" class="select">
-            <option v-for="s in STAGES" :key="s" :value="s">{{ s }}</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label class="label" for="contact">Contact</label>
-          <select
-            id="contact"
-            v-model.number="form.contactId"
-            class="select"
-            :class="{ invalid: submitted && errors.contactId }"
+        <div class="form-grid">
+          <FormField
+            class="span-2"
+            label="Title"
+            html-for="title"
+            :error="submitted ? errors.title : ''"
+            v-slot="{ invalid }"
           >
-            <option :value="null" disabled>Select a contact…</option>
-            <option v-for="c in contacts" :key="c.id" :value="c.id">
-              {{ c.name }} ({{ c.email }})
-            </option>
-          </select>
-          <p v-if="submitted && errors.contactId" class="field-error">
-            {{ errors.contactId }}
-          </p>
+            <BaseInput
+              id="title"
+              v-model="form.title"
+              :invalid="invalid"
+              placeholder="e.g. Enterprise license renewal"
+            />
+          </FormField>
+
+          <FormField
+            label="Amount (€)"
+            html-for="amount"
+            :error="submitted ? errors.amount : ''"
+            v-slot="{ invalid }"
+          >
+            <BaseInput
+              id="amount"
+              v-model="form.amount"
+              type="number"
+              :invalid="invalid"
+              min="0"
+              step="0.01"
+              inputmode="decimal"
+              placeholder="0.00"
+            />
+          </FormField>
+
+          <FormField label="Stage" html-for="stage">
+            <SearchableSelect
+              id="stage"
+              v-model="form.stage"
+              :options="STAGE_OPTIONS"
+            />
+          </FormField>
+
+          <FormField
+            class="span-2"
+            label="Contact"
+            html-for="contact"
+            :error="submitted ? errors.contactId : ''"
+            v-slot="{ invalid }"
+          >
+            <SearchableSelect
+              id="contact"
+              v-model="form.contactId"
+              :options="contactOptions"
+              :invalid="invalid"
+              placeholder="Search a contact…"
+            />
+          </FormField>
         </div>
 
         <div class="actions">
@@ -179,53 +191,43 @@ async function onSubmit() {
 </template>
 
 <style scoped>
-.wrap {
-  max-width: 560px;
-  margin: 0 auto;
-}
-
 .back {
   display: inline-block;
   margin-bottom: 1rem;
 }
 
 .form {
-  padding: 1.5rem;
+  padding: 1.75rem;
   display: grid;
-  gap: 1rem;
+  gap: 1.25rem;
 }
 
 .form h1 {
   margin: 0;
 }
 
-.field {
+.form-grid {
   display: grid;
-  gap: 0.35rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem 1.5rem;
 }
 
-.input.invalid,
-.select.invalid {
-  border-color: var(--danger);
-  background: #fef6f5;
-}
-
-.field-error {
-  margin: 0;
-  color: var(--danger);
-  font-size: 0.82rem;
+.span-2 {
+  grid-column: 1 / -1;
 }
 
 .actions {
   display: flex;
   gap: 0.6rem;
   justify-content: flex-end;
-  margin-top: 0.25rem;
 }
 
-@media (max-width: 540px) {
+@media (max-width: 640px) {
   .form {
     padding: 1.1rem;
+  }
+  .form-grid {
+    grid-template-columns: 1fr;
   }
   .actions {
     flex-direction: column-reverse;

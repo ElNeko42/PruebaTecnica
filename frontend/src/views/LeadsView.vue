@@ -1,9 +1,20 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
 import { RouterLink } from 'vue-router';
-import { fetchLeads } from '../api/leads';
+import { deleteLead, fetchLeads } from '../api/leads';
+import { apiErrorMessage } from '../api/errors';
+import { useToast } from '../composables/useToast';
+import DataTable from '../components/DataTable.vue';
 import type { Lead } from '../types';
 
+const COLUMNS = [
+  { key: 'title', label: 'Title' },
+  { key: 'status', label: 'Status' },
+  { key: 'score', label: 'Score', numeric: true },
+  { key: 'contact', label: 'Contact' },
+];
+
+const toast = useToast();
 const leads = ref<Lead[]>([]);
 const totalCount = ref(0);
 const page = ref(1);
@@ -27,10 +38,21 @@ async function load() {
     });
     leads.value = result.data;
     totalCount.value = result.totalCount;
-  } catch {
-    error.value = 'Could not load leads.';
+  } catch (err) {
+    error.value = apiErrorMessage(err, 'Could not load leads.');
   } finally {
     loading.value = false;
+  }
+}
+
+async function deleteOne(lead: Lead) {
+  if (!confirm(`Delete "${lead.title}"? This cannot be undone.`)) return;
+  try {
+    await deleteLead(lead.id);
+    toast.success('Lead deleted.');
+    load();
+  } catch (err) {
+    toast.error(apiErrorMessage(err, 'Could not delete the lead.'));
   }
 }
 
@@ -75,37 +97,31 @@ onMounted(load);
       </select>
     </div>
 
-    <div class="card table-wrap">
-      <p v-if="loading" class="empty">Loading…</p>
-      <p v-else-if="error" class="empty error">{{ error }}</p>
-      <p v-else-if="!leads.length" class="empty">No leads found.</p>
-      <table v-else class="table">
-        <thead>
-          <tr>
-            <th>Title</th>
-            <th>Status</th>
-            <th>Score</th>
-            <th>Contact</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="lead in leads" :key="lead.id">
-            <td>
-              <RouterLink :to="`/leads/${lead.id}`">{{ lead.title }}</RouterLink>
-            </td>
-            <td>
-              <span class="badge" :class="lead.status">{{ lead.status }}</span>
-            </td>
-            <td>{{ lead.score }}</td>
-            <td>{{ lead.contact?.name || `Contact #${lead.contactId}` }}</td>
-            <td>
-              <RouterLink :to="`/leads/${lead.id}/edit`">Edit</RouterLink>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <DataTable
+      :columns="COLUMNS"
+      :rows="leads"
+      :loading="loading"
+      :error="error"
+      empty-text="No leads found."
+    >
+      <template #title="{ row }">
+        <RouterLink :to="`/leads/${row.id}`">{{ row.title }}</RouterLink>
+      </template>
+      <template #status="{ row }">
+        <span class="badge" :class="row.status">{{ row.status }}</span>
+      </template>
+      <template #contact="{ row }">
+        {{ row.contact?.name || `Contact #${row.contactId}` }}
+      </template>
+      <template #actions="{ row }">
+        <div class="row-actions">
+          <RouterLink :to="`/leads/${row.id}/edit`">Edit</RouterLink>
+          <button class="link-btn danger" type="button" @click="deleteOne(row)">
+            Delete
+          </button>
+        </div>
+      </template>
+    </DataTable>
 
     <div class="pager">
       <button
@@ -153,8 +169,24 @@ onMounted(load);
   margin-bottom: 1rem;
 }
 
-.table-wrap {
-  overflow: auto;
+.row-actions {
+  display: inline-flex;
+  gap: 0.9rem;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.link-btn {
+  border: none;
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+  padding: 0;
+  font: inherit;
+}
+
+.link-btn.danger {
+  color: var(--danger);
 }
 
 .pager {
