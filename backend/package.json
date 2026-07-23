@@ -10,7 +10,9 @@
     "start:prod": "node dist/main",
     "migration:run": "ts-node -r tsconfig-paths/register ./src/database/run-migrations.ts",
     "seed": "ts-node -r tsconfig-paths/register ./src/database/seed.ts",
-    "db:setup": "npm run migration:run && npm run seed"
+    "db:setup": "npm run migration:run && npm run seed",
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.0",
@@ -35,8 +37,11 @@
     "@nestjs/schematics": "^11.0.0",
     "@types/bcrypt": "^5.0.2",
     "@types/express": "^5.0.0",
+    "@types/jest": "^30.0.0",
     "@types/node": "^22.10.0",
     "@types/passport-jwt": "^4.0.1",
+    "jest": "^30.4.2",
+    "ts-jest": "^29.4.12",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.7.2"

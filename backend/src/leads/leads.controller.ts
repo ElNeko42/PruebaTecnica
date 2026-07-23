@@ -14,7 +14,9 @@ import { CurrentUser } from '../auth/current-user.decorator';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateLeadDto } from './dto/create-lead.dto';
 import { UpdateLeadDto } from './dto/update-lead.dto';
+import { ChangeLeadStatusDto } from './dto/change-lead-status.dto';
 import { LeadsService } from './leads.service';
+import { LEAD_TRANSITIONS } from './lead-status';
 
 @Controller('leads')
 @UseGuards(JwtAuthGuard)
@@ -28,6 +30,12 @@ export class LeadsController {
     @Query('status') status?: string,
   ) {
     return this.leadsService.findAll(page, pageSize, status);
+  }
+
+  // Declared before ':id' so "transitions" is not parsed as a lead id.
+  @Get('transitions')
+  transitions() {
+    return LEAD_TRANSITIONS;
   }
 
   @Get(':id')
@@ -49,6 +57,14 @@ export class LeadsController {
     @Body() dto: UpdateLeadDto,
   ) {
     return this.leadsService.update(id, dto);
+  }
+
+  @Patch(':id/status')
+  changeStatus(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: ChangeLeadStatusDto,
+  ) {
+    return this.leadsService.changeStatus(id, dto.status);
   }
 
   @Delete(':id')

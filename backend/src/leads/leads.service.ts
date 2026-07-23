@@ -1,10 +1,15 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ContactsService } from '../contacts/contacts.service';
 import { CreateLeadDto } from './dto/create-lead.dto';
 import { UpdateLeadDto } from './dto/update-lead.dto';
 import { Lead } from './lead.entity';
+import { canTransition, isLeadStatus, LeadStatus } from './lead-status';
 
 @Injectable()
 export class LeadsService {
@@ -69,8 +74,37 @@ export class LeadsService {
     if (dto.contactId) {
       await this.contactsService.findOne(dto.contactId);
     }
+    // A status change through the generic update must still obey the rules.
+    if (dto.status && dto.status !== lead.status) {
+      this.assertValidTransition(lead.status as LeadStatus, dto.status);
+    }
     Object.assign(lead, dto);
     return this.leadsRepo.save(lead);
+  }
+
+  async changeStatus(id: number, status: string) {
+    const lead = await this.findOne(id);
+    this.assertValidTransition(lead.status as LeadStatus, status);
+    lead.status = status as LeadStatus;
+    await this.leadsRepo.save(lead);
+    return this.leadsRepo.findOne({
+      where: { id },
+      relations: ['contact', 'owner'],
+    });
+  }
+
+  private assertValidTransition(from: LeadStatus, to: string) {
+    if (!isLeadStatus(to)) {
+      throw new BadRequestException(`Unknown lead status '${to}'`);
+    }
+    if (from === to) {
+      throw new BadRequestException(`Lead is already '${to}'`);
+    }
+    if (!canTransition(from, to)) {
+      throw new BadRequestException(
+        `Invalid transition: a lead cannot move from '${from}' to '${to}'`,
+      );
+    }
   }
 
   async remove(id: number) {

@@ -41,3 +41,15 @@ export async function updateLead(
 export async function deleteLead(id: number) {
   await http.delete(`/leads/${id}`);
 }
+
+export async function changeLeadStatus(id: number, status: string) {
+  const { data } = await http.patch<Lead>(`/leads/${id}/status`, { status });
+  return data;
+}
+
+export async function fetchLeadTransitions() {
+  const { data } = await http.get<Record<string, string[]>>(
+    '/leads/transitions',
+  );
+  return data;
+}
