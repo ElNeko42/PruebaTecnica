@@ -1,6 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { QueryFailedError, Repository } from 'typeorm';
 import { Contact } from './contact.entity';
 import { CreateContactDto } from './dto/create-contact.dto';
 import { UpdateContactDto } from './dto/update-contact.dto';
@@ -19,10 +23,13 @@ export class ContactsService {
     const qb = this.contactsRepo.createQueryBuilder('contact');
 
     if (q) {
-      qb.andWhere('contact.name LIKE :q', { q: `%${q}%` });
+      qb.andWhere(
+        '(contact.name LIKE :q OR contact.email LIKE :q OR contact.company LIKE :q)',
+        { q: `%${q}%` },
+      );
     }
     if (company) {
-      qb.andWhere('contact.company = :company', { company });
+      qb.andWhere('contact.company LIKE :company', { company: `%${company}%` });
     }
 
     qb.orderBy('contact.createdAt', 'DESC').skip(skip).take(take);
@@ -41,13 +48,27 @@ export class ContactsService {
 
   async create(dto: CreateContactDto) {
     const contact = this.contactsRepo.create(dto);
-    return this.contactsRepo.save(contact);
+    return this.save(contact);
   }
 
   async update(id: number, dto: UpdateContactDto) {
     const contact = await this.findOne(id);
     Object.assign(contact, dto);
-    return this.contactsRepo.save(contact);
+    return this.save(contact);
+  }
+
+  private async save(contact: Contact) {
+    try {
+      return await this.contactsRepo.save(contact);
+    } catch (err) {
+      if (
+        err instanceof QueryFailedError &&
+        (err as unknown as { code?: string }).code === 'ER_DUP_ENTRY'
+      ) {
+        throw new ConflictException('A contact with this email already exists');
+      }
+      throw err;
+    }
   }
 
   async remove(id: number) {
