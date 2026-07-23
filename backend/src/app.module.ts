@@ -5,6 +5,7 @@ import { AuthModule } from './auth/auth.module';
 import { ContactsModule } from './contacts/contacts.module';
 import { LeadsModule } from './leads/leads.module';
 import { OpportunitiesModule } from './opportunities/opportunities.module';
+import { StatsModule } from './stats/stats.module';
 import { UsersModule } from './users/users.module';
 import { User } from './users/user.entity';
 import { Contact } from './contacts/contact.entity';
@@ -32,6 +33,7 @@ import { Opportunity } from './opportunities/opportunity.entity';
     ContactsModule,
     LeadsModule,
     OpportunitiesModule,
+    StatsModule,
   ],
 })
 export class AppModule {}

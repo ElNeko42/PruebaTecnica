@@ -23,6 +23,7 @@ function logout() {
       </div>
 
       <nav>
+        <RouterLink to="/dashboard">Dashboard</RouterLink>
         <RouterLink to="/leads">Leads</RouterLink>
         <RouterLink to="/contacts">Contacts</RouterLink>
         <RouterLink to="/opportunities">Opportunities</RouterLink>

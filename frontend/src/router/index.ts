@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
 import LoginView from '../views/LoginView.vue';
 import AppLayout from '../layouts/AppLayout.vue';
+import DashboardView from '../views/DashboardView.vue';
 import ContactsView from '../views/ContactsView.vue';
 import ContactDetailView from '../views/ContactDetailView.vue';
 import LeadsView from '../views/LeadsView.vue';
@@ -19,7 +20,8 @@ const router = createRouter({
       path: '/',
       component: AppLayout,
       children: [
-        { path: '', redirect: '/leads' },
+        { path: '', redirect: '/dashboard' },
+        { path: 'dashboard', name: 'dashboard', component: DashboardView },
         { path: 'contacts', name: 'contacts', component: ContactsView },
         { path: 'contacts/:id', name: 'contact-detail', component: ContactDetailView },
         { path: 'leads', name: 'leads', component: LeadsView },
@@ -57,7 +59,7 @@ router.beforeEach((to) => {
     return { name: 'login', query: { redirect: to.fullPath } };
   }
   if (to.name === 'login' && auth.isAuthenticated) {
-    return { name: 'leads' };
+    return { name: 'dashboard' };
   }
   return true;
 });

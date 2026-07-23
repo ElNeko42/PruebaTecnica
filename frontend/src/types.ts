@@ -55,6 +55,23 @@ export type PaginatedOpportunities = {
   pageSize: number;
 };
 
+export type StageBucket = { count: number; amount: number };
+
+export type StatsSummary = {
+  leads: {
+    total: number;
+    byStatus: Record<string, number>;
+  };
+  opportunities: {
+    total: number;
+    totalAmount: number;
+    byStage: Record<string, StageBucket>;
+    open: StageBucket;
+    won: StageBucket;
+    lost: StageBucket;
+  };
+};
+
 export type PaginatedLeads = {
   data: Lead[];
   totalCount: number;

@@ -105,11 +105,39 @@ async function seed() {
     );
   }
 
+  const oppTitles = [
+    'Enterprise license',
+    'Annual renewal',
+    'Pilot expansion',
+    'Add-on module',
+    'Support package',
+    'Training package',
+  ];
+  const oppStages = [
+    'prospecting',
+    'proposal',
+    'negotiation',
+    'won',
+    'lost',
+  ] as const;
+
+  for (let i = 1; i <= 15; i++) {
+    const title = `${oppTitles[i % oppTitles.length]} #${i}`;
+    const stage = oppStages[i % oppStages.length];
+    const amount = i * 1250 + 500;
+    const contactId = contactIds[(i - 1) % contactIds.length];
+    const ownerId = i % 2 === 0 ? adminId : salesId;
+    await ds.query(
+      `INSERT INTO opportunities (title, amount, stage, contact_id, owner_id) VALUES (?, ?, ?, ?, ?)`,
+      [title, amount, stage, contactId, ownerId],
+    );
+  }
+
   console.log('Seed complete.');
   console.log('Demo users:');
   console.log('  admin@demo.com / demo1234');
   console.log('  sales@demo.com / demo1234');
-  console.log(`  ${contactIds.length} contacts, 30 leads`);
+  console.log(`  ${contactIds.length} contacts, 30 leads, 15 opportunities`);
 
   await ds.destroy();
 }
