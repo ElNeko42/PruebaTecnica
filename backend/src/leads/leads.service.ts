@@ -30,8 +30,7 @@ export class LeadsService {
 
     qb.skip(skip).take(take);
 
-    const [data] = await qb.getManyAndCount();
-    const totalCount = data.length;
+    const [data, totalCount] = await qb.getManyAndCount();
 
     return {
       data,

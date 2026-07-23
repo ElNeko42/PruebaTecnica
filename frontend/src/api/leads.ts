@@ -6,11 +6,7 @@ export async function fetchLeads(params: {
   pageSize?: number;
   status?: string;
 }) {
-  const rest = {
-    page: params.page,
-    pageSize: params.pageSize,
-  };
-  const { data } = await http.get<PaginatedLeads>('/leads', { params: rest });
+  const { data } = await http.get<PaginatedLeads>('/leads', { params });
   return data;
 }
 
